@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Despacho — Déjà Vu</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#EFEFEF;color:#1a1a1a;min-height:100vh;padding-bottom:40px}
+.hdr{background:#9B2218;padding:14px 16px 10px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.hdr-row{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:50%;background:#D4AC0D;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#9B2218;flex-shrink:0}
+.hdr h1{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+.fecha{margin-top:7px;font-size:12px;color:rgba(255,255,255,.7)}
+.fecha b{color:#D4AC0D}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #eee}
+.tab{flex:1;padding:11px 4px;font-size:13px;font-weight:600;color:#999;text-align:center;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.on{color:#9B2218;border-bottom-color:#9B2218}
+.card{background:#fff;border-radius:12px;margin:12px;padding:16px;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.sec{font-size:11px;font-weight:700;color:#9B2218;text-transform:uppercase;letter-spacing:.5px;padding-bottom:8px;border-bottom:2px solid #D4AC0D;margin-bottom:13px}
+.lbl{font-size:11px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
+.fld{margin-bottom:12px}
+select,input[type=text],input[type=number],input[type=password]{width:100%;padding:12px 13px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-family:inherit;color:#1a1a1a;background:#fff;-webkit-appearance:none;appearance:none;outline:none}
+select:focus,input:focus{border-color:#9B2218;box-shadow:0 0 0 3px rgba(155,34,24,.1)}
+.sel-prod{display:none;padding:10px 12px;background:#FEF9E7;border-radius:8px;border-left:3px solid #D4AC0D;margin-bottom:12px}
+.sel-prod.vis{display:block}
+.sel-nom{font-size:14px;font-weight:600;color:#1a1a1a}
+.sel-det{font-size:12px;color:#666;margin-top:3px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-right:4px}
+.t1{background:#EAF4FB;color:#1a5f8a}
+.t2{background:#E9F7EF;color:#1a6b37}
+.td{background:#F5EEF8;color:#6c3483}
+.qty-wrap{display:flex;align-items:center;gap:8px}
+.qty-btn{width:46px;height:46px;border-radius:8px;border:1.5px solid #ddd;background:#f5f5f5;font-size:24px;font-weight:300;color:#555;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;user-select:none;-webkit-user-select:none}
+.qty-btn:active{background:#e8e8e8}
+.qty-num{flex:1;text-align:center;font-size:26px;font-weight:700;color:#9B2218;padding:8px 0;border:1.5px solid #ddd;border-radius:8px;background:#fff}
+.btn-add{width:100%;padding:13px;background:#C0392B;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;letter-spacing:.2px}
+.btn-add:active{background:#9B2218}
+.lista-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.badge{background:#C0392B;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.empty{text-align:center;padding:22px 0;color:#bbb;font-size:13px}
+.item{display:flex;align-items:center;gap:8px;padding:10px;border-radius:8px;background:#f8f8f8;margin-bottom:7px}
+.item-info{flex:1;min-width:0}
+.item-nom{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-det{font-size:11px;color:#888;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-q{font-size:17px;font-weight:700;color:#C0392B;flex-shrink:0;text-align:right}
+.item-q small{display:block;font-size:10px;color:#aaa;font-weight:400}
+.rm{background:none;border:none;color:#ccc;font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
+.rm:active{color:#C0392B}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.res-row:last-child{border-bottom:none}
+.res-l{color:#888}
+.res-v{font-weight:600}
+.btn-send{width:100%;padding:15px;background:#27AE60;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-send:active{background:#1E8449}
+.btn-send:disabled{background:#A9DFBF;cursor:not-allowed}
+.success{display:none;text-align:center;padding:36px 16px}
+.success.vis{display:block}
+.s-ico{font-size:52px;margin-bottom:10px}
+.success h2{font-size:19px;color:#1E8449;margin-bottom:8px}
+.success p{font-size:13px;color:#666;line-height:1.6;margin-bottom:20px}
+.btn-new{padding:12px 28px;background:#C0392B;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+.admin-note{font-size:12px;color:#666;background:#FEF9E7;padding:10px 12px;border-radius:8px;border-left:3px solid #D4AC0D;margin-bottom:14px;line-height:1.5}
+.prod-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f5f5f5}
+.prod-item:last-child{border-bottom:none}
+.pi-info{flex:1;min-width:0}
+.pi-n{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pi-f{font-size:11px;color:#888;margin-top:1px}
+.btn-del{background:none;border:none;font-size:17px;cursor:pointer;color:#ddd;padding:4px;flex-shrink:0}
+.btn-del:active{color:#C0392B}
+.new-form{background:#f8f8f8;border-radius:8px;padding:14px;margin-top:12px}
+.inp-f{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:14px;margin-bottom:8px;background:#fff;font-family:inherit;-webkit-appearance:none;outline:none}
+.inp-f:focus{border-color:#9B2218}
+.btn-save{width:100%;padding:11px;background:#9B2218;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-save:active{background:#7a1812}
+.lock-wrap{text-align:center;padding:32px 16px}
+.lock-ico{font-size:44px;margin-bottom:12px}
+.lock-wrap h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.lock-wrap p{font-size:13px;color:#888;margin-bottom:18px}
+.inp-pass{padding:13px;text-align:center;font-size:20px;letter-spacing:6px;margin-bottom:10px}
+.btn-entr{width:100%;padding:12px;background:#9B2218;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+.err-msg{color:#C0392B;font-size:12px;margin-top:6px;min-height:16px}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.ov.vis{display:flex}
+.spin{width:40px;height:40px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ov p{color:#fff;font-size:14px;font-weight:600}
+.tst{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;white-space:nowrap;z-index:200;pointer-events:none}
+.tst.vis{opacity:1}
+.tst.ok{background:#1E8449}
+.tst.er{background:#9B2218}
+.hide{display:none!important}
+/* search list — no blur/dropdown, native scroll instead */
+.search-box{position:relative}
+.srch{width:100%;padding:12px 13px 12px 36px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-family:inherit;color:#1a1a1a;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 11px center;-webkit-appearance:none;outline:none}
+.srch:focus{border-color:#9B2218;box-shadow:0 0 0 3px rgba(155,34,24,.1)}
+.prod-list{margin-top:6px;max-height:200px;overflow-y:auto;border:1.5px solid #eee;border-radius:8px;display:none}
+.prod-list.vis{display:block}
+.pl-item{padding:11px 13px;cursor:pointer;border-bottom:1px solid #f5f5f5;-webkit-user-select:none;user-select:none}
+.pl-item:last-child{border-bottom:none}
+.pl-item:active,.pl-item.sel{background:#FEF9E7}
+.pl-n{font-size:14px;font-weight:500}
+.pl-d{font-size:11px;color:#888;margin-top:2px}
+.no-res{padding:14px;text-align:center;color:#aaa;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="ov" id="ov"><div class="spin"></div><p>Enviando despacho…</p></div>
+<div class="tst" id="tst"></div>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div class="logo">DV</div>
+    <div><h1>Despacho de Producción</h1><div class="hdr-sub">Panadería Déjà Vu</div></div>
+  </div>
+  <div class="fecha">Hoy: <b id="fhdr"></b></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" id="t-desp" onclick="tab('desp',this)">📦 Despacho</button>
+  <button class="tab" id="t-adm" onclick="tab('adm',this)">⚙️ Catálogo</button>
+</div>
+
+<!-- ═══ DESPACHO ═══════════════════════════════════════════════════ -->
+<div id="pg-desp">
+  <div id="frm">
+    <div class="card">
+      <div class="sec">Datos del despacho</div>
+      <div class="fld"><label class="lbl">Planta que despacha</label>
+        <select id="planta" onchange="cambioPlanta()">
+          <option>Planta 1</option><option>Planta 2</option>
+          <option>Distribución</option><option value="Todas">Todas</option>
+        </select>
+      </div>
+      <div class="fld"><label class="lbl">Nombre del encargado</label>
+        <input type="text" id="enc" placeholder="Nombre completo" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Agregar producto</div>
+
+      <div class="sel-prod" id="sprod">
+        <div class="sel-nom" id="snom"></div>
+        <div class="sel-det" id="sdet"></div>
+      </div>
+
+      <div class="fld">
+        <label class="lbl">Buscar producto</label>
+        <div class="search-box">
+          <input class="srch" id="srch" type="text" placeholder="Escribe nombre o tipo…"
+            autocomplete="off" autocorrect="off" spellcheck="false"
+            oninput="buscar(this.value)">
+        </div>
+        <div class="prod-list" id="plist"></div>
+      </div>
+
+      <div class="fld">
+        <label class="lbl">Cantidad de empaques</label>
+        <div class="qty-wrap">
+          <button class="qty-btn" id="qm"
+            ontouchstart="startRep(-1,event)" ontouchend="stopRep()"
+            onmousedown="startRep(-1,event)" onmouseup="stopRep()" onmouseleave="stopRep()">−</button>
+          <input type="number" class="qty-num" id="qty" value="1" min="1" inputmode="numeric"
+            onchange="if(parseInt(this.value)<1||isNaN(parseInt(this.value)))this.value=1">
+          <button class="qty-btn" id="qp"
+            ontouchstart="startRep(1,event)" ontouchend="stopRep()"
+            onmousedown="startRep(1,event)" onmouseup="stopRep()" onmouseleave="stopRep()">+</button>
+        </div>
+      </div>
+
+      <div class="fld"><label class="lbl">Observación (opcional)</label>
+        <input type="text" id="obs" placeholder="Ej: bandeja incompleta" autocomplete="off">
+      </div>
+
+      <button class="btn-add" onclick="agregar()">+ Agregar al despacho</button>
+    </div>
+
+    <div class="card">
+      <div class="lista-hdr">
+        <div class="sec" style="margin-bottom:0;border:none;padding:0">Productos agregados</div>
+        <span class="badge" id="cnt">0</span>
+      </div>
+      <div id="lista"><div class="empty">Aún no hay productos agregados.</div></div>
+    </div>
+
+    <div class="card hide" id="res">
+      <div class="sec">Resumen</div>
+      <div class="res-row"><span class="res-l">Productos distintos</span><span class="res-v" id="rp">0</span></div>
+      <div class="res-row"><span class="res-l">Total empaques</span><span class="res-v" id="re">0</span></div>
+      <div class="res-row"><span class="res-l">Planta</span><span class="res-v" id="rpl">—</span></div>
+      <div class="res-row"><span class="res-l">Encargado</span><span class="res-v" id="ren">—</span></div>
+      <br>
+      <button class="btn-send" id="bsend" onclick="enviar()">✅ Enviar despacho</button>
+    </div>
+  </div>
+
+  <div class="card success" id="ok">
+    <div class="s-ico">✅</div>
+    <h2>¡Despacho registrado!</h2>
+    <p id="okmsg"></p>
+    <button class="btn-new" onclick="nuevo()">Registrar otro despacho</button>
+  </div>
+</div>
+
+<!-- ═══ ADMIN ══════════════════════════════════════════════════════ -->
+<div class="hide" id="pg-adm">
+  <div class="card" id="lock">
+    <div class="lock-wrap">
+      <div class="lock-ico">🔒</div>
+      <h3>Área de administración</h3>
+      <p>Ingresa la contraseña para gestionar el catálogo.</p>
+      <input type="password" class="inp-pass" id="pw" placeholder="••••" maxlength="12"
+        onkeydown="if(event.key==='Enter')desbloquear()">
+      <button class="btn-entr" onclick="desbloquear()">Ingresar</button>
+      <div class="err-msg" id="perr"></div>
+    </div>
+  </div>
+
+  <div class="hide" id="panel">
+    <div class="card">
+      <div class="sec">Catálogo actual</div>
+      <div class="admin-note">Productos disponibles en el formulario de despacho. Los cambios se guardan en este dispositivo automáticamente.</div>
+      <div id="cat-list"></div>
+    </div>
+    <div class="card">
+      <div class="sec">Agregar producto nuevo</div>
+      <div class="new-form">
+        <input class="inp-f" id="nn" type="text" placeholder="Nombre del producto" autocomplete="off">
+        <input class="inp-f" id="nf" type="text" placeholder="Familia (ej: Pan Batido / Magdalenas)" autocomplete="off">
+        <select class="inp-f" id="np" style="margin-bottom:0">
+          <option>Planta 1</option><option>Planta 2</option><option>Distribución</option>
+        </select>
+        <button class="btn-save" onclick="addProd()">+ Guardar producto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyA-lL5i7x22gFyExW3_9yaoAE8pzOOrWDxbkkmL8o6D7JGc2Mu6ArWNbm9twf3t-g/exec";
+const PASS = "dejavu2024";
+const SK = "dv_cat_v3";
+const CAT_DEFAULT = [{"n": "Alemana Fruta", "f": "Pan Batido / Alemanas", "p": "Planta 1"}, {"n": "Alemana Leche", "f": "Pan Batido / Alemanas", "p": "Planta 1"}, {"n": "Alemana Mixta", "f": "Pan Batido / Alemanas", "p": "Planta 1"}, {"n": "Alfajor Blanco", "f": "Galletas / Alfajores", "p": "Planta 2"}, {"n": "Alfajor Coco", "f": "Galletas / Alfajores", "p": "Planta 2"}, {"n": "Alfajor Mixto", "f": "Galletas / Alfajores", "p": "Planta 2"}, {"n": "Almendrada", "f": "Galletas / Especiales", "p": "Planta 1"}, {"n": "Salpor de Almidón", "f": "Galletas / Salpores", "p": "Planta 1"}, {"n": "Salpor de Arroz", "f": "Galletas / Salpores", "p": "Planta 1"}, {"n": "Azucarada Danesa", "f": "Pan Dulce", "p": "Distribución"}, {"n": "Bebesito: Pichardin Triangulo y Pastelito", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Biscocho de Levadura", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Brazo Gitano", "f": "Pan Batido / Torta", "p": "Planta 1"}, {"n": "Cachito Simple", "f": "Pan Salado / Levadura", "p": "Planta 1"}, {"n": "Quequito Choco Pixie", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Quequito Almendra", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Quequito Chispa Chocolate", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Quequito Coco", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Quequito Fruta", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Canasta", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Carcañal", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Carita", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Chilena", "f": "Repostería / Hojaldre", "p": "Planta 2"}, {"n": "Cocada / Coco Rallado", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Dalmata", "f": "Pan Batido / Glaseados", "p": "Planta 1"}, {"n": "Domito Castillo", "f": "Pan Simple", "p": "Planta 2"}, {"n": "Dona Choco Maní", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Dona Choco Coco", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Dona Choco Pixie", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Dona Chocolate", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Dona Blanca Mani", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Garrobo", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Girasol", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Gusano", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Hojita", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Honrada", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Leche", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Magdalena Caramelo", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Magdalena Mixta", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Mapa", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Maria Luisa Mixta", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Maria Luisa Roja", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Marmoleada", "f": "Pan Batido / Magdalenas", "p": "Planta 1"}, {"n": "Marquezote Leche", "f": "Pan Batido / Marquesote", "p": "Planta 1"}, {"n": "Marquezote Triangular", "f": "Pan Batido / Marquesote", "p": "Planta 1"}, {"n": "Milhoja", "f": "Repostería / Hojaldre", "p": "Distribución"}, {"n": "Mimoso: Cachito, Triangulo y Pastelito", "f": "Tradicional / Especiales", "p": "Planta 2"}, {"n": "Novia", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Nucita", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Pañuelo (turron)", "f": "Repostería / Hojaldre", "p": "Distribución"}, {"n": "Pascua", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Pastel Media Luna", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Pastel Mixto", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Pastelón", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Payasa", "f": "Pan Batido / Alemanas", "p": "Planta 2"}, {"n": "Pegadito", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Peperecha Aguada", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Peperecha Mixta", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Peperecha Tostada", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Pichardín", "f": "Tradicional / Especiales", "p": "Planta 2"}, {"n": "Pingüino", "f": "Pan Batido / Especialidades", "p": "Planta 1"}, {"n": "Poleada", "f": "Pan Batido / Especialidades", "p": "Planta 1"}, {"n": "Porosa Canela", "f": "Pan Batido / Especialidades", "p": "Planta 1"}, {"n": "Princessa", "f": "Pan Batido / Especialidades", "p": "Planta 1"}, {"n": "Quesadilla", "f": "Pan Batido / Especialidades", "p": "Planta 1"}, {"n": "Repostería Caramelo", "f": "Pan Batido / Repostería", "p": "Planta 1"}, {"n": "Repostería Mixta", "f": "Pan Batido / Repostería", "p": "Planta 1"}, {"n": "Seca", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Semita Alta", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Semita Pacha", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Suspiro", "f": "Galletas / Especiales", "p": "Planta 2"}, {"n": "Viejita", "f": "Tradicional / Levadura", "p": "Planta 2"}, {"n": "Zapato", "f": "Pan Batido / Repostería", "p": "Planta 1"}, {"n": "Zapato Almendra", "f": "Pan Batido / Repostería", "p": "Planta 1"}];
+
+let cat = [], items = [], selProd = null, repT = null, listVis = false;
+
+// ── init ──────────────────────────────────────────────────────────
+(function(){
+  const s = localStorage.getItem(SK);
+  cat = s ? JSON.parse(s) : JSON.parse(JSON.stringify(CAT_DEFAULT));
+  const d = new Date();
+  const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const mes  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('fhdr').textContent =
+    dias[d.getDay()]+', '+d.getDate()+' de '+mes[d.getMonth()]+' '+d.getFullYear();
+  // close list on outside tap
+  document.addEventListener('touchstart', function(e){
+    const pl = document.getElementById('plist');
+    const sr = document.getElementById('srch');
+    if(!pl.contains(e.target) && e.target !== sr){ cerrarLista(); }
+  }, {passive:true});
+  document.addEventListener('mousedown', function(e){
+    const pl = document.getElementById('plist');
+    const sr = document.getElementById('srch');
+    if(!pl.contains(e.target) && e.target !== sr){ cerrarLista(); }
+  });
+})();
+
+function guardar(){ localStorage.setItem(SK, JSON.stringify(cat)); }
+
+// ── tabs ──────────────────────────────────────────────────────────
+function tab(id, el){
+  ['desp','adm'].forEach(x=>{
+    document.getElementById('pg-'+x).classList.toggle('hide', x!==id);
+    document.getElementById('t-'+x).classList.toggle('on', x===id);
+  });
+  if(id==='adm') renderAdmin();
+}
+
+// ── planta filter ─────────────────────────────────────────────────
+function cambioPlanta(){
+  selProd=null;
+  document.getElementById('sprod').classList.remove('vis');
+  document.getElementById('srch').value='';
+  cerrarLista();
+}
+function filtrados(){
+  const p=document.getElementById('planta').value;
+  return p==='Todas'?cat:cat.filter(x=>x.p===p);
+}
+
+// ── search list (NO blur/dropdown — rendered inline below input) ──
+function buscar(q){
+  const pl=document.getElementById('plist');
+  const lista=filtrados().filter(x=>
+    x.n.toLowerCase().includes(q.toLowerCase())||x.f.toLowerCase().includes(q.toLowerCase())
+  );
+  if(q===''){ cerrarLista(); return; }
+  renderList(lista, pl);
+  pl.classList.add('vis');
+  listVis=true;
+}
+
+function renderList(lista, pl){
+  if(!lista.length){
+    pl.innerHTML='<div class="no-res">Sin resultados</div>';
+    return;
+  }
+  pl.innerHTML=lista.map((p,i)=>{
+    const pc=p.p==='Planta 1'?'t1':p.p==='Planta 2'?'t2':'td';
+    const safeN=p.n.replace(/'/g,"\'").replace(/"/g,'&quot;');
+    const safeF=p.f.replace(/'/g,"\'").replace(/"/g,'&quot;');
+    const safePl=p.p.replace(/'/g,"\'");
+    return '<div class="pl-item" '+
+      'ontouchstart="elegir(\''+safeN+'\',\''+safeF+'\',\''+safePl+'\',event)" '+
+      'onmousedown="elegir(\''+safeN+'\',\''+safeF+'\',\''+safePl+'\',event)">'+
+      '<div class="pl-n">'+p.n+'</div>'+
+      '<div class="pl-d"><span class="tag '+pc+'">'+p.p+'</span>'+p.f+'</div></div>';
+  }).join('');
+}
+
+function cerrarLista(){
+  document.getElementById('plist').classList.remove('vis');
+  listVis=false;
+}
+
+function elegir(n,f,p,ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  selProd={n,f,p};
+  document.getElementById('srch').value=n;
+  cerrarLista();
+  const sp=document.getElementById('sprod');
+  document.getElementById('snom').textContent=n;
+  const pc=p==='Planta 1'?'t1':p==='Planta 2'?'t2':'td';
+  document.getElementById('sdet').innerHTML='<span class="tag '+pc+'">'+p+'</span>'+f;
+  sp.classList.add('vis');
+  document.getElementById('qty').value=1;
+  document.getElementById('qty').focus();
+  document.getElementById('qty').select();
+}
+
+// ── qty stepper ───────────────────────────────────────────────────
+function chQty(d){
+  const el=document.getElementById('qty');
+  el.value=Math.max(1,(parseInt(el.value)||0)+d);
+}
+function startRep(d,ev){
+  if(ev) ev.preventDefault();
+  chQty(d);
+  repT=setInterval(()=>chQty(d),130);
+}
+function stopRep(){ clearInterval(repT); }
+
+// ── agregar ───────────────────────────────────────────────────────
+function agregar(){
+  if(!selProd){ toast('Selecciona un producto de la lista','er'); return; }
+  const cant=parseInt(document.getElementById('qty').value)||0;
+  if(cant<1){ toast('Ingresa una cantidad mayor a 0','er'); return; }
+  const obs=document.getElementById('obs').value.trim();
+  const ex=items.find(i=>i.n===selProd.n);
+  if(ex){
+    ex.q+=cant;
+    toast('Actualizado: '+ex.n+' → '+ex.q+' empaques','ok');
+  } else {
+    items.push({n:selProd.n,f:selProd.f,p:selProd.p,q:cant,obs});
+    toast(selProd.n+' agregado ✓','ok');
+  }
+  document.getElementById('srch').value='';
+  document.getElementById('obs').value='';
+  document.getElementById('qty').value=1;
+  document.getElementById('sprod').classList.remove('vis');
+  selProd=null;
+  renderItems();
+  document.getElementById('srch').focus();
+}
+
+// ── render items ──────────────────────────────────────────────────
+function renderItems(){
+  const cont=document.getElementById('lista');
+  const res=document.getElementById('res');
+  document.getElementById('cnt').textContent=items.length;
+  if(!items.length){
+    cont.innerHTML='<div class="empty">Aún no hay productos agregados.</div>';
+    res.classList.add('hide'); return;
+  }
+  cont.innerHTML=items.map((it,i)=>{
+    const pc=it.p==='Planta 1'?'t1':it.p==='Planta 2'?'t2':'td';
+    return '<div class="item">'+
+      '<span class="tag '+pc+'" style="flex-shrink:0">'+it.p+'</span>'+
+      '<div class="item-info"><div class="item-nom">'+it.n+'</div>'+
+      '<div class="item-det">'+it.f+(it.obs?' · '+it.obs:'')+'</div></div>'+
+      '<div class="item-q">'+it.q+'<small>emp.</small></div>'+
+      '<button class="rm" onclick="quitar('+i+')">×</button></div>';
+  }).join('');
+  document.getElementById('rp').textContent=items.length;
+  document.getElementById('re').textContent=items.reduce((s,i)=>s+i.q,0);
+  document.getElementById('rpl').textContent=document.getElementById('planta').value;
+  document.getElementById('ren').textContent=document.getElementById('enc').value||'—';
+  res.classList.remove('hide');
+}
+function quitar(i){ items.splice(i,1); renderItems(); }
+
+// ── enviar ────────────────────────────────────────────────────────
+function enviar(){
+  if(!items.length){ toast('Agrega al menos un producto','er'); return; }
+  var enc=document.getElementById('enc').value.trim();
+  if(!enc){ toast('Ingresa el nombre del encargado','er'); return; }
+  var planta=document.getElementById('planta').value;
+  var d=new Date();
+  var fecha=d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear();
+  var te=items.reduce(function(s,i){return s+i.q;},0);
+  var payload=JSON.stringify({planta:planta,encargado:enc,fecha:fecha,
+    items:items.map(function(i){return {nombre:i.n,familia:i.f,planta:i.p,empaques:i.q,obs:i.obs||''};})});
+  document.getElementById('ov').classList.add('vis');
+  document.getElementById('bsend').disabled=true;
+  function mostrarExito(){
+    var despachoId='DSP-'+d.getFullYear()+
+      (d.getMonth()<9?'0':'')+(d.getMonth()+1)+
+      (d.getDate()<10?'0':'')+d.getDate()+
+      '-'+String(Math.floor(Math.random()*999)+1).padStart(3,'0');
+    document.getElementById('ov').classList.remove('vis');
+    document.getElementById('frm').classList.add('hide');
+    document.getElementById('ok').classList.add('vis');
+    document.getElementById('okmsg').innerHTML=
+      '<b>'+items.length+' productos · '+te+' empaques</b><br>'+
+      enc+' — '+planta+'<br>ID: <b>'+despachoId+'</b>';
+    items=[];
+  }
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST',SCRIPT_URL,true);
+  xhr.setRequestHeader('Content-Type','text/plain');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState===4){
+      mostrarExito();
+    }
+  };
+  xhr.onerror=function(){ mostrarExito(); };
+  xhr.send(payload);
+}
+function nuevo(){
+  items=[];
+  document.getElementById('frm').classList.remove('hide');
+  document.getElementById('ok').classList.remove('vis');
+  document.getElementById('bsend').disabled=false;
+  renderItems();
+}
+
+// ── admin ─────────────────────────────────────────────────────────
+function desbloquear(){
+  if(document.getElementById('pw').value===PASS){
+    document.getElementById('lock').classList.add('hide');
+    document.getElementById('panel').classList.remove('hide');
+    renderAdmin();
+  } else {
+    document.getElementById('perr').textContent='Contraseña incorrecta';
+    document.getElementById('pw').value='';
+    setTimeout(()=>document.getElementById('perr').textContent='',2000);
+  }
+}
+function renderAdmin(){
+  const cont=document.getElementById('cat-list');
+  if(!cont) return;
+  const sorted=[...cat].sort((a,b)=>a.p.localeCompare(b.p)||a.n.localeCompare(b.n));
+  cont.innerHTML=sorted.map(p=>{
+    const ri=cat.indexOf(p);
+    const pc=p.p==='Planta 1'?'t1':p.p==='Planta 2'?'t2':'td';
+    return '<div class="prod-item">'+
+      '<span class="tag '+pc+'" style="flex-shrink:0">'+p.p+'</span>'+
+      '<div class="pi-info"><div class="pi-n">'+p.n+'</div><div class="pi-f">'+p.f+'</div></div>'+
+      '<button class="btn-del" onclick="delProd('+ri+')">🗑</button></div>';
+  }).join('');
+}
+function delProd(i){
+  if(confirm('¿Eliminar "'+cat[i].n+'" del catálogo?')){
+    const n=cat[i].n; cat.splice(i,1); guardar(); renderAdmin(); toast(n+' eliminado','ok');
+  }
+}
+function addProd(){
+  const n=document.getElementById('nn').value.trim();
+  const f=document.getElementById('nf').value.trim();
+  const p=document.getElementById('np').value;
+  if(!n){ toast('Ingresa el nombre del producto','er'); return; }
+  if(!f){ toast('Ingresa la familia del producto','er'); return; }
+  if(cat.find(x=>x.n.toLowerCase()===n.toLowerCase())){ toast('Ese producto ya existe','er'); return; }
+  cat.push({n,f,p}); guardar(); renderAdmin();
+  document.getElementById('nn').value='';
+  document.getElementById('nf').value='';
+  toast(n+' agregado al catálogo ✓','ok');
+}
+
+// ── toast ─────────────────────────────────────────────────────────
+function toast(m,t){
+  const el=document.getElementById('tst');
+  el.textContent=m; el.className='tst vis '+(t||'');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('vis'),2600);
+}
+</script>
+</body>
+</html>
