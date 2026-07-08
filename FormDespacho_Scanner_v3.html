@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Despacho — Déjà Vu</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#EFEFEF;color:#1a1a1a;padding-bottom:48px}
+.hdr{background:#9B2218;padding:14px 16px 10px}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:50%;background:#D4AC0D;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#9B2218;flex-shrink:0}
+.hdr h1{font-size:15px;font-weight:700;color:#fff}
+.hdr-s{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+.fecha{margin-top:7px;font-size:12px;color:rgba(255,255,255,.7)}
+.fecha b{color:#D4AC0D}
+.card{background:#fff;border-radius:12px;margin:12px;padding:16px;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.sec{font-size:11px;font-weight:700;color:#9B2218;text-transform:uppercase;letter-spacing:.5px;padding-bottom:8px;border-bottom:2px solid #D4AC0D;margin-bottom:13px}
+.lbl{display:block;font-size:11px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.fld{margin-bottom:12px}
+select,input[type=text],input[type=number]{width:100%;padding:12px 13px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-family:inherit;color:#1a1a1a;background:#fff;-webkit-appearance:none;outline:none}
+select:focus,input:focus{border-color:#9B2218;box-shadow:0 0 0 3px rgba(155,34,24,.1)}
+.search-row{display:flex;gap:8px;align-items:center}
+.search-row input{flex:1}
+.btn-scan{width:48px;height:48px;border-radius:8px;border:1.5px solid #ddd;background:#f5f5f5;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;position:relative;overflow:hidden}
+.btn-scan:active{background:#eee}
+.btn-scan input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.pbox{display:none;padding:10px 12px;background:#FEF9E7;border-radius:8px;border-left:3px solid #D4AC0D;margin-bottom:12px}
+.pbox.on{display:block}
+.pnom{font-size:14px;font-weight:600}
+.pdet{font-size:12px;color:#666;margin-top:3px}
+.tag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;margin-right:4px}
+.t1{background:#EAF4FB;color:#1a5f8a}.t2{background:#E9F7EF;color:#1a6b37}.td{background:#F5EEF8;color:#6c3483}
+.srch{padding:12px 13px 12px 36px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 11px center}
+.plist{display:none;border:1.5px solid #e0e0e0;border-radius:8px;margin-top:4px;max-height:210px;overflow-y:auto;background:#fff}
+.plist.on{display:block}
+.pi{padding:11px 13px;border-bottom:1px solid #f5f5f5;cursor:pointer}
+.pi:last-child{border-bottom:none}
+.pi:active{background:#FEF9E7}
+.pi-n{font-size:14px;font-weight:500}
+.pi-d{font-size:11px;color:#888;margin-top:2px}
+.nores{padding:14px;text-align:center;color:#bbb;font-size:13px}
+.cat-status{font-size:12px;color:#888;text-align:center;padding:6px 0;font-style:italic}
+.scan-status{font-size:12px;color:#1a5276;text-align:center;padding:4px 0;display:none}
+.qrow{display:flex;align-items:center;gap:8px}
+.qbtn{width:48px;height:48px;border-radius:8px;border:1.5px solid #ddd;background:#f5f5f5;font-size:24px;font-weight:300;color:#444;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.qbtn:active{background:#e5e5e5}
+.qnum{flex:1;text-align:center;font-size:26px;font-weight:700;color:#9B2218;padding:8px 0;border:1.5px solid #ddd;border-radius:8px}
+.btn-add{width:100%;padding:13px;background:#C0392B;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;touch-action:manipulation}
+.btn-add:active{background:#9B2218}
+.lhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.badge{background:#C0392B;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.empty{text-align:center;padding:22px 0;color:#bbb;font-size:13px}
+.item{display:flex;align-items:center;gap:8px;padding:10px;border-radius:8px;background:#f8f8f8;margin-bottom:7px}
+.iinfo{flex:1;min-width:0}
+.inom{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.idet{font-size:11px;color:#888;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iq{font-size:17px;font-weight:700;color:#C0392B;flex-shrink:0;text-align:right;min-width:36px}
+.iq small{display:block;font-size:10px;color:#aaa;font-weight:400}
+.rm{background:none;border:none;color:#ccc;font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;touch-action:manipulation}
+.rm:active{color:#C0392B}
+.rrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.rrow:last-child{border-bottom:none}
+.rl{color:#888}.rv{font-weight:600}
+.btn-send{width:100%;padding:15px;background:#27AE60;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin-top:6px;touch-action:manipulation}
+.btn-send:active{background:#1E8449}
+.btn-send:disabled{background:#A9DFBF;cursor:not-allowed}
+.suc{display:none;text-align:center;padding:36px 16px}
+.suc.on{display:block}
+.sico{font-size:52px;margin-bottom:10px}
+.suc h2{font-size:19px;color:#1E8449;margin-bottom:8px}
+.suc p{font-size:13px;color:#666;line-height:1.6;margin-bottom:20px}
+.btn-new{padding:12px 28px;background:#C0392B;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.ov.on{display:flex}
+.spin{width:40px;height:40px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ov-txt{color:#fff;font-size:14px;font-weight:600}
+.tst{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;white-space:nowrap;z-index:300;pointer-events:none}
+.tst.on{opacity:1}
+.tst.ok{background:#1E8449}.tst.er{background:#9B2218}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="ov" id="ov"><div class="spin"></div><div class="ov-txt">Enviando...</div></div>
+<div class="tst" id="tst"></div>
+
+<div class="hdr">
+  <div class="hdr-r"><div class="logo">DV</div>
+  <div><h1>Despacho de Producción</h1><div class="hdr-s">Panadería Déjà Vu</div></div></div>
+  <div class="fecha">Hoy: <b id="fhdr"></b></div>
+</div>
+
+<div id="main-frm">
+  <div class="card">
+    <div class="sec">Datos del despacho</div>
+    <div class="fld"><label class="lbl">Planta que despacha</label>
+      <select id="sel-planta" onchange="cambioPlanta()">
+        <option>Planta 1</option><option>Planta 2</option>
+        <option>Distribución</option><option value="Todas">Todas las plantas</option>
+      </select></div>
+    <div class="fld"><label class="lbl">Nombre del encargado</label>
+      <input type="text" id="inp-enc" placeholder="Nombre completo" autocomplete="off"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Agregar producto</div>
+    <div class="pbox" id="pbox">
+      <div class="pnom" id="pnom"></div>
+      <div class="pdet" id="pdet"></div>
+    </div>
+    <div class="fld">
+      <label class="lbl">Buscar producto o escanear código</label>
+      <div class="search-row">
+        <input type="text" class="srch" id="inp-srch"
+          placeholder="Escribe nombre o escanea..."
+          autocomplete="off" autocorrect="off" spellcheck="false"
+          oninput="onBuscar(this.value)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();var q=this.value.trim().toUpperCase();if(q.length>=8&&q.indexOf('DV')===0){buscarPorCodigo(q);}else{onBuscar(this.value);}}">
+        <div class="btn-scan" title="Escanear código de barras">
+          📷
+          <input type="file" accept="image/*" capture="environment" id="scanInput" onchange="procesarImagen(this)">
+        </div>
+      </div>
+      <div class="cat-status" id="cat-status">Cargando catálogo...</div>
+      <div class="scan-status" id="scan-status">🔍 Procesando código...</div>
+      <div class="plist" id="plist"></div>
+    </div>
+    <div class="fld"><label class="lbl">Cantidad de empaques</label>
+      <div class="qrow">
+        <button class="qbtn" ontouchstart="startRep(-1,event)" ontouchend="stopRep()"
+          onmousedown="startRep(-1,event)" onmouseup="stopRep()" onmouseleave="stopRep()">−</button>
+        <input type="number" class="qnum" id="inp-qty" value="1" min="1" inputmode="numeric" onchange="fixQty()">
+        <button class="qbtn" ontouchstart="startRep(1,event)" ontouchend="stopRep()"
+          onmousedown="startRep(1,event)" onmouseup="stopRep()" onmouseleave="stopRep()">+</button>
+      </div></div>
+    <div class="fld"><label class="lbl">Fecha de Producción</label>
+      <input type="date" id="inp-fprod" style="width:100%;padding:12px 13px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-family:inherit;color:#1a1a1a;background:#fff;-webkit-appearance:none;outline:none">
+      <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic" id="fcad-display"></div>
+    </div>
+    <div class="fld"><label class="lbl">Observación (opcional)</label>
+      <input type="text" id="inp-obs" placeholder="Ej: bandeja incompleta" autocomplete="off"></div>
+    <button class="btn-add" onclick="agregar()">+ Agregar al despacho</button>
+  </div>
+
+  <div class="card">
+    <div class="lhdr">
+      <div class="sec" style="margin:0;border:none;padding:0">Productos agregados</div>
+      <span class="badge" id="cnt">0</span>
+    </div>
+    <div id="lista"><div class="empty">Aún no hay productos.</div></div>
+  </div>
+
+  <div class="card hide" id="resumen">
+    <div class="sec">Resumen del despacho</div>
+    <div class="rrow"><span class="rl">Productos distintos</span><span class="rv" id="r-p">0</span></div>
+    <div class="rrow"><span class="rl">Total empaques</span><span class="rv" id="r-e">0</span></div>
+    <div class="rrow"><span class="rl">Planta</span><span class="rv" id="r-pl">—</span></div>
+    <div class="rrow"><span class="rl">Encargado</span><span class="rv" id="r-en">—</span></div>
+    <br>
+    <button class="btn-send" id="btn-send" onclick="enviar()">✅ Enviar despacho</button>
+  </div>
+</div>
+
+<div class="card suc" id="ok-card">
+  <div class="sico">✅</div><h2>¡Despacho registrado!</h2>
+  <p id="ok-msg"></p>
+  <button class="btn-new" onclick="nuevoDespacho()">Registrar otro despacho</button>
+</div>
+
+<!-- ZXing library for barcode decoding from image -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.20.0/zxing.min.js"></script>
+<script>
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB2nZZkYGhGHatZdsKmc2fGQy_KWbMG-dZ7X5pzwJ4ET3NLQj6vvlrxp8mJviIULFyTg/exec";
+var cat=[], items=[], sel=null, repT=null, catCargado=false;
+
+function init(){
+  var d=new Date();
+  var dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+  var mes=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  document.getElementById("fhdr").textContent=dias[d.getDay()]+", "+d.getDate()+" de "+mes[d.getMonth()]+" "+d.getFullYear();
+  // Set default production date to today
+  var hoy=d.getFullYear()+"-"+(d.getMonth()<9?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+  var fprod=document.getElementById("inp-fprod");
+  fprod.value=hoy;
+  fprod.addEventListener("change",actualizarCaducidad);
+  actualizarCaducidad();
+  document.addEventListener("touchstart",function(e){
+    var pl=document.getElementById("plist"),sr=document.getElementById("inp-srch");
+    if(pl&&!pl.contains(e.target)&&e.target!==sr) cerrarLista();
+  },{passive:true});
+  cargarCatalogo();
+}
+
+function actualizarCaducidad(){
+  var fprod=document.getElementById("inp-fprod").value;
+  var disp=document.getElementById("fcad-display");
+  if(!fprod){disp.textContent="";return;}
+  var d=new Date(fprod+"T00:00:00");
+  d.setDate(d.getDate()+15);
+  var dias=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  var mes=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  var fcadStr=d.getDate()+" de "+mes[d.getMonth()]+" "+d.getFullYear()+" ("+dias[d.getDay()]+")";
+  disp.textContent="📅 Caduca: "+fcadStr;
+  disp.style.color="#C0392B";
+  disp.style.fontWeight="600";
+}
+
+function calcCaducidad(fprod){
+  if(!fprod) return "";
+  var d=new Date(fprod+"T00:00:00");
+  d.setDate(d.getDate()+15);
+  return d.getDate().toString().padStart(2,"0")+"/"+(d.getMonth()+1).toString().padStart(2,"0")+"/"+d.getFullYear();
+}
+
+function cargarCatalogo(){
+  var planta=document.getElementById("sel-planta").value;
+  document.getElementById("cat-status").textContent="Cargando catálogo...";
+  document.getElementById("cat-status").style.display="block";
+  fetch(SCRIPT_URL+"?action=getCatalogo&planta="+encodeURIComponent(planta))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.status==="ok"){
+        cat=data.catalogo; catCargado=true;
+        document.getElementById("cat-status").textContent=cat.length+" productos disponibles";
+        setTimeout(function(){document.getElementById("cat-status").style.display="none";},2000);
+      } else {
+        document.getElementById("cat-status").textContent="Error al cargar catálogo";
+      }
+    }).catch(function(){
+      document.getElementById("cat-status").textContent="Sin conexión";
+    });
+}
+
+function cambioPlanta(){
+  sel=null;
+  document.getElementById("pbox").classList.remove("on");
+  document.getElementById("inp-srch").value="";
+  cerrarLista(); cargarCatalogo();
+}
+
+// ── Procesar imagen del código de barras ──────────────────────
+function procesarImagen(input){
+  if(!input.files||!input.files[0]) return;
+  var ss=document.getElementById("scan-status");
+  ss.style.display="block";
+  ss.textContent="🔍 Procesando código...";
+
+  var file=input.files[0];
+  var url=URL.createObjectURL(file);
+  var img=new Image();
+  img.onload=function(){
+    if(typeof ZXing!=="undefined"){
+      var hints=new Map();
+      var reader=new ZXing.MultiFormatReader();
+      try{
+        var canvas=document.createElement("canvas");
+        canvas.width=img.naturalWidth;
+        canvas.height=img.naturalHeight;
+        var ctx=canvas.getContext("2d");
+        ctx.drawImage(img,0,0);
+        var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+        var luminanceSource=new ZXing.RGBLuminanceSource(imageData.data,canvas.width,canvas.height);
+        var binaryBitmap=new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
+        var result=reader.decode(binaryBitmap);
+        var codigo=result.getText();
+        ss.style.display="none";
+        URL.revokeObjectURL(url);
+        input.value="";
+        buscarPorCodigo(codigo);
+      } catch(e){
+        ss.textContent="No se detectó código — intenta de nuevo";
+        setTimeout(function(){ss.style.display="none";},3000);
+        URL.revokeObjectURL(url);
+        input.value="";
+      }
+    } else {
+      ss.textContent="Librería no disponible";
+      setTimeout(function(){ss.style.display="none";},2000);
+    }
+  };
+  img.src=url;
+}
+
+function buscarPorCodigo(codigo){
+  var cod = codigo.trim().toUpperCase();
+  var prod=null;
+  // Buscar coincidencia exacta primero
+  for(var i=0;i<cat.length;i++){
+    if(cat[i].c && cat[i].c.trim().toUpperCase()===cod){prod=cat[i];break;}
+  }
+  // Si no encuentra exacto, buscar parcial (por si el lector agrega caracteres extra)
+  if(!prod){
+    for(var i=0;i<cat.length;i++){
+      if(cat[i].c && cod.indexOf(cat[i].c.trim().toUpperCase())>=0){prod=cat[i];break;}
+      if(cat[i].c && cat[i].c.trim().toUpperCase().indexOf(cod)>=0){prod=cat[i];break;}
+    }
+  }
+  if(prod){
+    elegir(prod);
+    document.getElementById("inp-srch").value=prod.n;
+    cerrarLista();
+    toast("✓ "+prod.n,"ok");
+  } else {
+    toast("Código no encontrado: "+cod,"er");
+    // Mostrar el código en el campo para búsqueda manual
+    document.getElementById("inp-srch").value="";
+  }
+}
+
+// ── Búsqueda por nombre ───────────────────────────────────────
+function onBuscar(q){
+  var pl=document.getElementById("plist");
+  if(!q){cerrarLista();return;}
+  if(!catCargado){pl.innerHTML='<div class="nores">Cargando...</div>';pl.classList.add("on");return;}
+  // Detectar si es código de barras (empieza con DV y tiene al menos 8 chars)
+  var qTrim = q.trim().toUpperCase();
+  if(qTrim.length >= 8 && qTrim.indexOf("DV") === 0){
+    buscarPorCodigo(qTrim);
+    return;
+  }
+  var lista=cat.filter(function(x){
+    return x.n.toLowerCase().indexOf(q.toLowerCase())>=0||x.f.toLowerCase().indexOf(q.toLowerCase())>=0;
+  });
+  if(!lista.length){pl.innerHTML='<div class="nores">Sin resultados</div>';pl.classList.add("on");return;}
+  var h="";
+  for(var i=0;i<lista.length;i++){
+    var p=lista[i];
+    var pc=p.p==="Planta 1"?"t1":p.p==="Planta 2"?"t2":"td";
+    h+='<div class="pi"><div class="pi-n">'+p.n+'</div>'+
+       '<div class="pi-d"><span class="tag '+pc+'">'+p.p+'</span>'+p.f+'</div></div>';
+  }
+  pl.innerHTML=h;
+  pl.classList.add("on");
+  var els=pl.querySelectorAll(".pi");
+  for(var j=0;j<els.length;j++){
+    (function(prod){
+      els[j].addEventListener("touchstart",function(e){e.preventDefault();elegir(prod);},{passive:false});
+      els[j].addEventListener("mousedown",function(e){e.preventDefault();elegir(prod);});
+    })(lista[j]);
+  }
+}
+
+function cerrarLista(){var pl=document.getElementById("plist");if(pl)pl.classList.remove("on");}
+
+function elegir(p){
+  sel=p;
+  document.getElementById("inp-srch").value=p.n;
+  cerrarLista();
+  var pc=p.p==="Planta 1"?"t1":p.p==="Planta 2"?"t2":"td";
+  document.getElementById("pnom").textContent=p.n;
+  document.getElementById("pdet").innerHTML='<span class="tag '+pc+'">'+p.p+'</span>'+p.f+(p.c?" · Cód: "+p.c:"");
+  document.getElementById("pbox").classList.add("on");
+  document.getElementById("inp-qty").value=1;
+}
+
+function fixQty(){var el=document.getElementById("inp-qty");if(!el.value||parseInt(el.value)<1)el.value=1;}
+function chQty(d){var el=document.getElementById("inp-qty");el.value=Math.max(1,(parseInt(el.value)||0)+d);}
+function startRep(d,e){if(e)e.preventDefault();chQty(d);repT=setInterval(function(){chQty(d);},130);}
+function stopRep(){clearInterval(repT);}
+
+function agregar(){
+  if(!sel){toast("Selecciona un producto de la lista","er");return;}
+  var cant=parseInt(document.getElementById("inp-qty").value)||0;
+  if(cant<1){toast("Ingresa una cantidad mayor a 0","er");return;}
+  var obs=document.getElementById("inp-obs").value.trim();
+  var fprod=document.getElementById("inp-fprod").value;
+  if(!fprod){toast("Ingresa la fecha de producción","er");return;}
+  var fcad=calcCaducidad(fprod);
+  // Format fprod for display
+  var dp=new Date(fprod+"T00:00:00");
+  var fprodFmt=dp.getDate().toString().padStart(2,"0")+"/"+(dp.getMonth()+1).toString().padStart(2,"0")+"/"+dp.getFullYear();
+  var ex=null;
+  for(var i=0;i<items.length;i++){if(items[i].n===sel.n){ex=items[i];break;}}
+  if(ex){
+    ex.q+=cant;ex.fprod=fprodFmt;ex.fcad=fcad;
+    toast("Actualizado: "+sel.n+" — "+ex.q+" empaques","ok");
+  } else {
+    items.push({n:sel.n,f:sel.f,p:sel.p,c:sel.c||"",q:cant,obs:obs,fprod:fprodFmt,fcad:fcad});
+    toast(sel.n+" agregado ✓","ok");
+  }
+  document.getElementById("inp-srch").value="";
+  document.getElementById("inp-obs").value="";
+  document.getElementById("inp-qty").value=1;
+  document.getElementById("pbox").classList.remove("on");
+  sel=null; renderItems();
+}
+
+function renderItems(){
+  var cont=document.getElementById("lista"),res=document.getElementById("resumen");
+  document.getElementById("cnt").textContent=items.length;
+  if(!items.length){cont.innerHTML='<div class="empty">Aún no hay productos.</div>';res.classList.add("hide");return;}
+  var h="";
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    var pc=it.p==="Planta 1"?"t1":it.p==="Planta 2"?"t2":"td";
+    h+='<div class="item"><span class="tag '+pc+'" style="flex-shrink:0">'+it.p+'</span>'+
+       '<div class="iinfo"><div class="inom">'+it.n+'</div><div class="idet">'+it.f+(it.obs?" · "+it.obs:"")+'</div></div>'+
+       '<div class="iq">'+it.q+'<small>emp.</small></div>'+
+       '<button class="rm" onclick="quitar('+i+')">×</button></div>';
+  }
+  cont.innerHTML=h;
+  var te=0;for(var i=0;i<items.length;i++) te+=items[i].q;
+  document.getElementById("r-p").textContent=items.length;
+  document.getElementById("r-e").textContent=te;
+  document.getElementById("r-pl").textContent=document.getElementById("sel-planta").value;
+  document.getElementById("r-en").textContent=document.getElementById("inp-enc").value||"—";
+  res.classList.remove("hide");
+}
+function quitar(i){items.splice(i,1);renderItems();}
+
+function enviar(){
+  if(!items.length){toast("Agrega al menos un producto","er");return;}
+  var enc=document.getElementById("inp-enc").value.trim();
+  if(!enc){toast("Ingresa el nombre del encargado","er");return;}
+  var planta=document.getElementById("sel-planta").value;
+  var d=new Date();
+  var fecha=d.getDate().toString().padStart(2,"0")+"/"+(d.getMonth()+1).toString().padStart(2,"0")+"/"+d.getFullYear();
+  var te=0;for(var i=0;i<items.length;i++) te+=items[i].q;
+  var payload=JSON.stringify({planta:planta,encargado:enc,fecha:fecha,
+    items:items.map(function(i){return{nombre:i.n,familia:i.f,planta:i.p,empaques:i.q,obs:i.obs||"",codigo:i.c||"",fechaProd:i.fprod||"",fechaCad:i.fcad||""};})});
+  document.getElementById("ov").classList.add("on");
+  document.getElementById("btn-send").disabled=true;
+  function mostrarExito(id){
+    document.getElementById("ov").classList.remove("on");
+    document.getElementById("main-frm").classList.add("hide");
+    document.getElementById("ok-card").classList.add("on");
+    document.getElementById("ok-msg").innerHTML="<b>"+items.length+" productos · "+te+" empaques</b><br>"+enc+" — "+planta+"<br>ID: <b>"+id+"</b>";
+    items=[];
+  }
+  var xhr=new XMLHttpRequest();
+  xhr.open("POST",SCRIPT_URL,true);
+  xhr.setRequestHeader("Content-Type","text/plain");
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState===4){
+      var id="DSP-"+d.getFullYear()+(d.getMonth()<9?"0":"")+(d.getMonth()+1)+(d.getDate()<10?"0":"")+d.getDate()+"-"+String(Math.floor(Math.random()*999)+1).padStart(3,"0");
+      try{
+        var resp=JSON.parse(xhr.responseText);
+        if(resp.despachoId) id=resp.despachoId;
+      }catch(e){}
+      mostrarExito(id);
+    }
+  };
+  xhr.onerror=function(){
+    var id="DSP-"+d.getFullYear()+(d.getMonth()<9?"0":"")+(d.getMonth()+1)+(d.getDate()<10?"0":"")+d.getDate()+"-"+String(Math.floor(Math.random()*999)+1).padStart(3,"0");
+    mostrarExito(id);
+  };
+  xhr.send(payload);
+}
+
+function nuevoDespacho(){
+  items=[];
+  document.getElementById("main-frm").classList.remove("hide");
+  document.getElementById("ok-card").classList.remove("on");
+  document.getElementById("btn-send").disabled=false;
+  renderItems();
+}
+
+function toast(m,t){
+  var el=document.getElementById("tst");
+  el.textContent=m;el.className="tst on "+(t||"");
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){el.classList.remove("on");},2600);
+}
+
+init();
+</script>
+</body>
+</html>
